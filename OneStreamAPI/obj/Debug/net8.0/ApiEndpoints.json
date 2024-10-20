@@ -1,0 +1,28 @@
+[
+  {
+    "ContainingType": "OneStreamAPI.Controllers.FrontEndController",
+    "Method": "Get",
+    "RelativePath": "api/FrontEnd",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "OneStreamAPI.Controllers.FrontEndController",
+    "Method": "Post",
+    "RelativePath": "api/FrontEnd",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "value",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

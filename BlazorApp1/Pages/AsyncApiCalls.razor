@@ -1,0 +1,137 @@
+﻿@page "/AsyncAPICalls"
+
+<h1>Asynchronous API Calls</h1>
+
+<button class="btn btn-primary" @onclick="postAsyncCalls" >Make Async Calls</button>
+<label>
+    <input type="checkbox" @bind="isInputVisible" />
+   <span>POSTAPI</span>
+</label>
+
+<div>
+    <br/>
+<label id="lblMsg" style="font-size:15px;@(statusMessageColor)"  >@statusMessage</label>
+</div>
+
+@if (isInputVisible)
+{
+    <div>
+        <label for="inputText">Enter a message:</label>
+        <input type="text" id="inputText" @bind="inputMessage" placeholder="Type your post message here..." />
+    </div>
+
+}
+
+
+<h2>API Responses:</h2>
+
+<div>
+    <strong>Result from API 1:</strong>
+    <p>@responseFromApi1</p>
+</div>
+<div>
+    <strong>Result from API 2:</strong>
+    <p>@responseFromApi2</p>
+</div>
+
+
+@code {
+    private string inputMessage;
+    private string responseFromApi1;
+    private string responseFromApi2;
+    private string statusMessage;
+    private string statusMessageColor;
+
+    private bool isInputVisible = false;
+
+    private void ToggleInputVisibility()
+    {
+        isInputVisible = !isInputVisible;
+        statusMessage = "";
+    }
+    private async Task getAsyncCalls()
+    {
+        try
+        {
+            var task1 = CallApi1();
+            var task2 = CallApi2();
+            await Task.WhenAll(task1, task2);
+            responseFromApi1 = await task1;
+            responseFromApi2 = await task2;
+            statusMessage = "API calls completed successfully. \n " + responseFromApi1 + ","+responseFromApi2 +"" ;
+            statusMessageColor     ="background-color:green;color:white";
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Error making API calls: {ex.Message}";
+        }
+    }
+
+    private async Task postAsyncCalls()
+    {
+        try
+        {
+            if (!isInputVisible)
+            {
+                await getAsyncCalls();
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(inputMessage))
+                {
+                    statusMessageColor = "color: red; font-weight: bold;";
+                    statusMessage = "Please enter some text to call POST API ...";
+                }
+                else
+                {
+                var task1 = CallPostApi1(inputMessage);
+                var task2 = CallPostApi2(inputMessage);
+                await Task.WhenAll(task1, task2);
+                responseFromApi1 = await task1;
+                responseFromApi2 = await task2;
+                statusMessage = "API calls completed successfully." + "with responses: " + responseFromApi1 + ", " + responseFromApi2;
+               statusMessageColor     ="background-color:green;color:white";
+                }
+
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Error making API calls: {ex.Message}";
+        }
+    }
+
+    private async Task<string> CallApi1()
+    {
+        var _httpClient = new HttpClient();
+        var response = await _httpClient.GetAsync("https://localhost:7049/api/ApiController1");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    private async Task<string> CallApi2()
+    {
+        var _httpClient = new HttpClient();
+        var response = await _httpClient.GetAsync("https://localhost:7049/api/ApiController2");
+        Console.WriteLine(response.Content.ToString());     
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
+    }  
+    private async Task<string> CallPostApi1(string message)
+    {
+        using var _httpClient = new HttpClient();
+        var content = new StringContent($"\"{message}\"", System.Text.Encoding.UTF8, "application/json");
+        var response = await _httpClient.PostAsync("https://localhost:7049/api/ApiController1", content);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    private async Task<string> CallPostApi2(string message)
+    {
+        using var _httpClient = new HttpClient();
+        var content = new StringContent($"\"{message}\"", System.Text.Encoding.UTF8, "application/json");
+        var response = await _httpClient.PostAsync("https://localhost:7049/api/ApiController2", content);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
+    }
+}
