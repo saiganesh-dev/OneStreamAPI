@@ -1,0 +1,15 @@
+1. // Animal instance (d) has only speak method which takes integer as parameter.
+   // To print "bow-wow", Had to intiate dog class and type cast 0 to short.
+     
+            Dog d = new Dog();
+            Console.WriteLine(d.speak((short)0));
+
+2. //  const is used for only referening primitive data types not class instances.   
+            
+           public const A a;        
+  
+  //   Replacing with below code will print 10,0
+  
+           public readonly A a =new A { a=10};     
+
+        
